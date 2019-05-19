@@ -16,16 +16,20 @@ namespace UFG
         protected Point3d CENTROID;
         public string COMMENT;
         public Extrusion SOLID;
-        double FSR;
+        protected double HEIGHT;
+        double FSR=0.0;
+        double GFA = 0.0;
 
         public SiteObj() { }
+
         public SiteObj(
             Line ray,
             Curve site,
             Point3d intxpt,
             double setbackdist,
             Point3d p,
-            double fsr)
+            double fsr
+            )
         {
             RAYLINE = ray;
             SITE = site;
@@ -33,6 +37,7 @@ namespace UFG
             SETBACKDIST = setbackdist;
             CENTROID = p;
             FSR = fsr;
+            GFA = FSR * Rhino.Geometry.AreaMassProperties.Compute(SITE).Area;
         }
 
         public Extrusion GetOffsetExtrusion()
@@ -43,10 +48,13 @@ namespace UFG
                 SETBACKDIST,
                 Rhino.RhinoDoc.ActiveDoc.ModelAbsoluteTolerance,
                 CurveOffsetCornerStyle.Sharp
-                );
-            SOLID = Extrusion.Create(offsetCrv[0], 10, true);
+            );
+            double ar = AreaMassProperties.Compute(offsetCrv[0]).Area;
+            HEIGHT = GFA / ar;
+            SOLID = Extrusion.Create(offsetCrv[0], -HEIGHT, true);
             return SOLID;
         }
+
         public Curve GetSite() { return SITE; }
         public Point3d GetIntxPt() { return INTXPT; }
         public double GetSetbackDist() { return SETBACKDIST; }
@@ -54,5 +62,11 @@ namespace UFG
         public string GetComment() { return COMMENT; }
         public Point3d GetCentroid() { return CENTROID; }
         public Line GetRayLine() { return RAYLINE; }
+
+        public string GetHt()
+        {
+            string ht = HEIGHT.ToString();
+            return ht;
+        }
     }
 }

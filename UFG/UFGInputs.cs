@@ -38,7 +38,6 @@ namespace UFG
             // pManager.AddIntegerParameter("Input-Number-Rays", "inp.D.0", "Default Value= 8, type: integer", GH_ParamAccess.item);
             }
 
-
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             // 0.
@@ -91,12 +90,10 @@ namespace UFG
             DA.GetData(4, ref MAXHT);
             DA.GetData(5, ref MINHT);
 
-            int NUMRAYS = 4;
-            // DA.GetData(6, ref NUMRAYS);
+            int NUMRAYS = 4; // DA.GetData(6, ref NUMRAYS);
 
             double MAGNITUDERAYS = 2.0;
-            DA.GetData(6, ref MAGNITUDERAYS);
-            // DA.GetData(7, ref MAGNITUDERAYS);
+            DA.GetData(6, ref MAGNITUDERAYS); // DA.GetData(7, ref MAGNITUDERAYS);
 
             ProcessIntx processintx = new ProcessIntx(
                 PROCOBJLI, 
@@ -116,7 +113,6 @@ namespace UFG
             {
                 intxpts.Add(SITEOBJ[i].GetIntxPt());
                 crvSite.Add(SITEOBJ[i].GetSite());
-                // rays.Add(SITEOBJ[i].GetRayLine());
                 solids.Add(SITEOBJ[i].GetOffsetExtrusion());
             }
 
@@ -133,7 +129,7 @@ namespace UFG
 
         public override Guid ComponentGuid
         {
-            get { return new Guid("f00a11e0-ac24-4755-80a0-08a5cd2e5671"); }
+            get { return new Guid("f00a11e0-ac24-4755-80a0-08a5cd2e5671"); } 
         }
     }
 }

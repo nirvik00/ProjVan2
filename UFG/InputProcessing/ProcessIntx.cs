@@ -183,7 +183,6 @@ namespace UFG
                     }
                 }
             }
-
             return intxPt;
         }
 
