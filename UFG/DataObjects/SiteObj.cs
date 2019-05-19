@@ -15,6 +15,8 @@ namespace UFG
         protected double INTXDIST;
         protected Point3d CENTROID;
         public string COMMENT;
+        public Extrusion SOLID;
+        double FSR;
 
         public SiteObj() { }
         public SiteObj(
@@ -22,13 +24,28 @@ namespace UFG
             Curve site,
             Point3d intxpt,
             double setbackdist,
-            Point3d p)
+            Point3d p,
+            double fsr)
         {
             RAYLINE = ray;
             SITE = site;
             INTXPT = intxpt;
             SETBACKDIST = setbackdist;
             CENTROID = p;
+            FSR = fsr;
+        }
+
+        public Extrusion GetOffsetExtrusion()
+        {
+            var offsetCrv = SITE.Offset(
+                CENTROID,
+                Vector3d.ZAxis,
+                SETBACKDIST,
+                Rhino.RhinoDoc.ActiveDoc.ModelAbsoluteTolerance,
+                CurveOffsetCornerStyle.Sharp
+                );
+            SOLID = Extrusion.Create(offsetCrv[0], 10, true);
+            return SOLID;
         }
         public Curve GetSite() { return SITE; }
         public Point3d GetIntxPt() { return INTXPT; }

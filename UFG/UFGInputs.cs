@@ -30,13 +30,13 @@ namespace UFG
             pManager.AddNumberParameter("Input-Max-Height", "inp.C.1", "Default Value=10.0\nEnter the maximum height\nPreferred Input Type: NUMERIC SLIDER", GH_ParamAccess.item);
             // 5.
             pManager.AddNumberParameter("Input-Min-Height", "inp.C.2", "Default Value=0.0\nEnter the minimum height\nPreferred Input Type: NUMERIC SLIDER", GH_ParamAccess.item);
+            // 6.
+            pManager.AddNumberParameter("Input-Magnitude-Rays", "inp.D.1", "Default Value= 100, type: double ", GH_ParamAccess.item);
 
             // intersection inputs
             // 6.
-            pManager.AddIntegerParameter("Input-Number-Rays", "inp.D.0", "Default Value= 8, type: integer", GH_ParamAccess.item);
-            // 7.
-            pManager.AddNumberParameter("Input-Magnitude-Rays", "inp.D.1", "Default Value= 100, type: double ", GH_ParamAccess.item);
-        }
+            // pManager.AddIntegerParameter("Input-Number-Rays", "inp.D.0", "Default Value= 8, type: integer", GH_ParamAccess.item);
+            }
 
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
@@ -56,7 +56,7 @@ namespace UFG
             // 6.
             pManager.AddCurveParameter("site", "site", "site", GH_ParamAccess.list);
             // 7.
-            pManager.AddCurveParameter("rays", "rays", "rays", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("rays", "rays", "rays", GH_ParamAccess.list);
         }
 
         protected override void SolveInstance(IGH_DataAccess DA)
@@ -91,11 +91,12 @@ namespace UFG
             DA.GetData(4, ref MAXHT);
             DA.GetData(5, ref MINHT);
 
-            int NUMRAYS = 8; 
-            DA.GetData(6, ref NUMRAYS);
+            int NUMRAYS = 4;
+            // DA.GetData(6, ref NUMRAYS);
 
-            double MAGNITUDERAYS = 100.0;
-            DA.GetData(7, ref MAGNITUDERAYS);
+            double MAGNITUDERAYS = 2.0;
+            DA.GetData(6, ref MAGNITUDERAYS);
+            // DA.GetData(7, ref MAGNITUDERAYS);
 
             ProcessIntx processintx = new ProcessIntx(
                 PROCOBJLI, 
@@ -104,27 +105,25 @@ namespace UFG
                 NUMRAYS,MAGNITUDERAYS);
 
             processintx.GenRays();
-            //List<LineCurve> streetLines = processintx.GetStreets();
 
             List<SiteObj> SITEOBJ = processintx.GetSiteObjList();
-            // List<Point3d> cenSite = new List<Point3d>();
             List<Curve> crvSite = new List<Curve>();
             List<Point3d> intxpts = new List<Point3d>();
             List<Line> rays = new List<Line>();
-
+            rays = processintx.GetRays();
+            List<Extrusion> solids = new List<Extrusion>();
             for (int i=0; i< SITEOBJ.Count; i++)
             {
                 intxpts.Add(SITEOBJ[i].GetIntxPt());
                 crvSite.Add(SITEOBJ[i].GetSite());
-                rays.Add(SITEOBJ[i].GetRayLine());
+                // rays.Add(SITEOBJ[i].GetRayLine());
+                solids.Add(SITEOBJ[i].GetOffsetExtrusion());
             }
 
             DA.SetDataList(4, rays);
             DA.SetDataList(5, intxpts);
             DA.SetDataList(6, crvSite);
-
-            List<Line> rayli = processintx.GetRays();
-            DA.SetDataList(7, rayli);
+            DA.SetDataList(7, solids);
         }
 
         protected override System.Drawing.Bitmap Icon

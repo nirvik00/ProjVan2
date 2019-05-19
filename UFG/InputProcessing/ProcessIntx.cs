@@ -59,26 +59,73 @@ namespace UFG
             }
         }
 
+        public List<Point3d> GetPtsFromCrv(Curve crv)
+        {
+            List<Point3d> pts = new List<Point3d>();
+            var t = crv.TryGetPolyline(out Polyline sitepoly);
+            IEnumerator<Point3d> sitePts = sitepoly.GetEnumerator();
+            while (sitePts.MoveNext())
+            {
+                pts.Add(sitePts.Current);
+            }
+            return pts;
+        }
+
+        public List<Line> GetRaysFromPt(Point3d pt, List<Point3d>pts)
+        {
+            List<Line> rays = new List<Line>();
+            double maxD = -10.0;
+            Point3d A = new Point3d();
+            Point3d B = new Point3d();
+            for(int i=0; i<pts.Count-1; i++)
+            {
+                Point3d a = pts[i];
+                Point3d b = pts[i + 1];
+                double e = a.DistanceTo(b);
+                if (e > maxD)
+                {
+                    maxD = e;
+                    A = a;
+                    B = b;
+                }
+            }
+            double mag = A.DistanceTo(B);
+            double sc = mag * MAGRAYS;
+            Point3d u = new Point3d((B.X - A.X) / mag, (B.Y - A.Y) / mag, 0);
+            Point3d v = new Point3d(-u.Y * sc, u.X * sc, 0.0);
+            Point3d w = new Point3d(u.Y * sc, -u.X * sc, 0.0);
+            Point3d p0 = new Point3d(pt.X + v.X, pt.Y + v.Y, 0);
+            Point3d p1 = new Point3d(pt.X + w.X, pt.Y + w.Y, 0);
+            Point3d p2 = new Point3d(pt.X + u.X*sc, pt.Y + u.Y*sc, 0);
+            Point3d p3 = new Point3d(pt.X - u.X*sc, pt.Y - u.Y*sc, 0);
+            rays.Add(new Line(pt, p0));
+            rays.Add(new Line(pt, p1));
+            rays.Add(new Line(pt, p2));
+            rays.Add(new Line(pt, p3));
+            for(int i=0; i<rays.Count; i++)
+            {
+                RAYLI.Add(rays[i]);
+            }
+            return rays;
+        }
+
         public void GenRays()
         {
             SITEOBJLI = new List<SiteObj>();
             for (int i = 0; i < SITECRVLI.Count; i++)
             {
                 Curve sitecrv = SITECRVLI[i];
-                Point3d p = Rhino.Geometry.AreaMassProperties.Compute(sitecrv).Centroid;
+                Point3d p = AreaMassProperties.Compute(sitecrv).Centroid;
+                List<Point3d> sitePts = GetPtsFromCrv(sitecrv);
+                List<Line> rays = GetRaysFromPt(p, sitePts);
 
-                Line ray = new Line();
                 Point3d fIntxPt = Point3d.Unset;
                 double fsetbackdist = double.NaN;
+                Line Ray = new Line();
                 double minD = 1000000000000.00;
-                for (double j = 0; j < 2 * Math.PI; j += Math.PI/4)
+                for (int j = 0; j < rays.Count; j++)
                 {
-                    double x = p.X + (MAGRAYS * Math.Cos(j) - MAGRAYS * Math.Sin(j));
-                    double y = p.Y + (MAGRAYS * Math.Sin(j) + MAGRAYS * Math.Cos(j));
-                    Point3d r = new Point3d(x, y, 0);
-                    ray = new Line(p, r);
-                    RAYLI.Add(ray);
-
+                    Line ray = rays[j];
                     for(int k=0; k< PROCOBJLI.Count; k++)
                     {
                         List<LineCurve> streets = PROCOBJLI[k].GetStreetLineCurves();
@@ -90,11 +137,12 @@ namespace UFG
                             minD = d;
                             fIntxPt = intxPt;
                             fsetbackdist = setbackdist;
+                            Ray = ray;
                         }
                     }
 
                 }
-                SiteObj obj = new SiteObj(ray, sitecrv, fIntxPt, fsetbackdist, p);
+                SiteObj obj = new SiteObj(Ray, sitecrv, fIntxPt, fsetbackdist, p, FSR);
                 SITEOBJLI.Add(obj);
             }
         }
@@ -125,8 +173,6 @@ namespace UFG
                     double rq2 = r.DistanceTo(q2);
                     double sq2 = s.DistanceTo(q2);
                     double rs = r.DistanceTo(s);
-
-
                     if ((Math.Abs(pp2 + qp2 - pq) < 1.1) && (Math.Abs(rq2 + sq2 - rs) < 1.1))
                     {
                         if (pp2 < minD)
@@ -145,6 +191,7 @@ namespace UFG
         public List<Curve> GetSites() { return SITECRVLI; }
         public List<LineCurve> GetStreets() { return FULLSTREETLI; }
         public List<Line> GetRays() { return RAYLI; }
+
     } // end class
 } // end namespace 
 
