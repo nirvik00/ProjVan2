@@ -56,7 +56,7 @@
     <Compile Include="InputProcessing\InputProc.cs" />
     <Compile Include="DataObjects\ProcObj.cs" />
     <Compile Include="InputProcessing\ProcessIntx.cs" />
-    <Compile Include="IntxObj.cs" />
+    <Compile Include="DataObjects\SiteObj.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Readme.txt" />

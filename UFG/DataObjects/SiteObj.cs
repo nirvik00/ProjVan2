@@ -6,7 +6,7 @@ using Rhino.Geometry;
 
 namespace UFG
 {
-    public class IntxObj
+    public class SiteObj
     {
         Line RAYLINE;
         protected Curve SITE;
@@ -16,8 +16,8 @@ namespace UFG
         protected Point3d CENTROID;
         public string COMMENT;
 
-        public IntxObj() { }
-        public IntxObj(
+        public SiteObj() { }
+        public SiteObj(
             Line ray,
             Curve site,
             Point3d intxpt,
@@ -29,26 +29,6 @@ namespace UFG
             INTXPT = intxpt;
             SETBACKDIST = setbackdist;
             CENTROID = p;
-        }
-        public IntxObj(Curve site, Point3d c) {
-            SITE = site;
-            CENTROID = c;
-        }
-        public IntxObj(Line ray, 
-            Curve site, 
-            Point3d intxpt, 
-            double setbackdist, 
-            double intxdist, 
-            string s, 
-            Point3d cen)
-        {
-            RAYLINE = ray;
-            SITE = site;
-            INTXPT = intxpt;
-            SETBACKDIST = setbackdist;
-            INTXDIST = intxdist;
-            COMMENT = s;
-            CENTROID = cen;
         }
         public Curve GetSite() { return SITE; }
         public Point3d GetIntxPt() { return INTXPT; }

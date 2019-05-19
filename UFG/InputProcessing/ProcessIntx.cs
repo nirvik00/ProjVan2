@@ -9,7 +9,7 @@ namespace UFG
 
     public class ProcessIntx
     {
-        protected List<IntxObj> INTXOBJLI;
+        protected List<SiteObj> SITEOBJLI;
         protected List<ProcObj> PROCOBJLI;
         protected List<Curve> SITECRVLI;
         protected List<LineCurve> FULLSTREETLI;
@@ -35,7 +35,7 @@ namespace UFG
            )
         {
             RAYLI = new List<Line>();
-            INTXOBJLI = new List<IntxObj>();
+            SITEOBJLI = new List<SiteObj>();
 
             SITECRVLI = new List<Curve>();
             SITECRVLI = sitecrvs;
@@ -61,7 +61,7 @@ namespace UFG
 
         public void GenRays()
         {
-            INTXOBJLI = new List<IntxObj>();
+            SITEOBJLI = new List<SiteObj>();
             for (int i = 0; i < SITECRVLI.Count; i++)
             {
                 Curve sitecrv = SITECRVLI[i];
@@ -71,9 +71,6 @@ namespace UFG
                 Point3d fIntxPt = Point3d.Unset;
                 double fsetbackdist = double.NaN;
                 double minD = 1000000000000.00;
-
-                //int n = NUMRAYS;
-                // double angle = (360 / n) * Math.PI / 180;
                 for (double j = 0; j < 2 * Math.PI; j += Math.PI/4)
                 {
                     double x = p.X + (MAGRAYS * Math.Cos(j) - MAGRAYS * Math.Sin(j));
@@ -97,8 +94,8 @@ namespace UFG
                     }
 
                 }
-                IntxObj obj = new IntxObj(ray, sitecrv, fIntxPt, fsetbackdist, p);
-                INTXOBJLI.Add(obj);
+                SiteObj obj = new SiteObj(ray, sitecrv, fIntxPt, fsetbackdist, p);
+                SITEOBJLI.Add(obj);
             }
         }
 
@@ -144,7 +141,7 @@ namespace UFG
             return intxPt;
         }
 
-        public List<IntxObj> GetIntxObjList() { return INTXOBJLI; }
+        public List<SiteObj> GetSiteObjList() { return SITEOBJLI; }
         public List<Curve> GetSites() { return SITECRVLI; }
         public List<LineCurve> GetStreets() { return FULLSTREETLI; }
         public List<Line> GetRays() { return RAYLI; }

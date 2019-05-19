@@ -106,21 +106,19 @@ namespace UFG
             processintx.GenRays();
             //List<LineCurve> streetLines = processintx.GetStreets();
 
-            List<IntxObj> INTXOBJ = processintx.GetIntxObjList();
+            List<SiteObj> SITEOBJ = processintx.GetSiteObjList();
             // List<Point3d> cenSite = new List<Point3d>();
             List<Curve> crvSite = new List<Curve>();
             List<Point3d> intxpts = new List<Point3d>();
             List<Line> rays = new List<Line>();
 
-            for (int i=0; i<INTXOBJ.Count; i++)
+            for (int i=0; i< SITEOBJ.Count; i++)
             {
-                intxpts.Add(INTXOBJ[i].GetIntxPt());
-                //cenSite.Add(INTXOBJ[i].GetCentroid());
-                crvSite.Add(INTXOBJ[i].GetSite());
-                rays.Add(INTXOBJ[i].GetRayLine());
+                intxpts.Add(SITEOBJ[i].GetIntxPt());
+                crvSite.Add(SITEOBJ[i].GetSite());
+                rays.Add(SITEOBJ[i].GetRayLine());
             }
 
-            //DA.SetDataList(4, streetLines);
             DA.SetDataList(4, rays);
             DA.SetDataList(5, intxpts);
             DA.SetDataList(6, crvSite);
