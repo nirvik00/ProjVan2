@@ -23,12 +23,12 @@ namespace UFG
         public SiteObj() { }
 
         public SiteObj(
-            Line ray,
-            Curve site,
-            Point3d intxpt,
-            double setbackdist,
-            Point3d p,
-            double fsr
+                Line ray,
+                Curve site,
+                Point3d intxpt,
+                double setbackdist,
+                Point3d p,
+                double fsr
             )
         {
             RAYLINE = ray;

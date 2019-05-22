@@ -36,10 +36,8 @@ namespace UFG
         {
             RAYLI = new List<Line>();
             SITEOBJLI = new List<SiteObj>();
-
             SITECRVLI = new List<Curve>();
             SITECRVLI = sitecrvs;
-
             PROCOBJLI = new List<ProcObj>();
             PROCOBJLI = procobjli;
             FSR = fsr;
@@ -47,10 +45,8 @@ namespace UFG
             MINHT= minht;
             NUMRAYS = numrays;
             MAGRAYS = magrays;
-
             SETBACKDISTLI = new List<double>();
             FULLSTREETLI = new List<LineCurve>();
-
             for (int i=0;i<PROCOBJLI.Count; i++)
             {
                 List<LineCurve> li = PROCOBJLI[i].GetStreetLineCurves();
@@ -62,12 +58,15 @@ namespace UFG
         public List<Point3d> GetPtsFromCrv(Curve crv)
         {
             List<Point3d> pts = new List<Point3d>();
-            var t = crv.TryGetPolyline(out Polyline sitepoly);
-            IEnumerator<Point3d> sitePts = sitepoly.GetEnumerator();
-            while (sitePts.MoveNext())
+            try
             {
-                pts.Add(sitePts.Current);
-            }
+                var t = crv.TryGetPolyline(out Polyline sitepoly);
+                IEnumerator<Point3d> sitePts = sitepoly.GetEnumerator();
+                while (sitePts.MoveNext())
+                {
+                    pts.Add(sitePts.Current);
+                }
+            }catch(Exception) { }
             return pts;
         }
 
@@ -90,7 +89,7 @@ namespace UFG
                 }
             }
             double mag = A.DistanceTo(B);
-            double sc = mag * MAGRAYS;
+            double sc = mag * MAGRAYS; //input: magrays file:ufg main input file
             Point3d u = new Point3d((B.X - A.X) / mag, (B.Y - A.Y) / mag, 0);
             Point3d v = new Point3d(-u.Y * sc, u.X * sc, 0.0);
             Point3d w = new Point3d(u.Y * sc, -u.X * sc, 0.0);
@@ -130,7 +129,7 @@ namespace UFG
                     {
                         List<LineCurve> streets = PROCOBJLI[k].GetStreetLineCurves();
                         double setbackdist = PROCOBJLI[k].GetSetbackDist();
-                        Point3d intxPt=GetIntx(ray, streets, sitecrv, setbackdist);
+                        Point3d intxPt = GetIntx(ray, streets, sitecrv, setbackdist);
                         double d = p.DistanceTo(intxPt);
                         if (d < minD)
                         {
@@ -140,7 +139,6 @@ namespace UFG
                             Ray = ray;
                         }
                     }
-
                 }
                 SiteObj obj = new SiteObj(Ray, sitecrv, fIntxPt, fsetbackdist, p, FSR);
                 SITEOBJLI.Add(obj);
